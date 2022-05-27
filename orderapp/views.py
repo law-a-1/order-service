@@ -1,5 +1,6 @@
-from datetime import datetime
 import requests
+import pika
+from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.views import Response
 from rest_framework import status
@@ -211,6 +212,30 @@ def notify_status(request,id):
             token = request.headers['Authorization']
             r = requests.get('https://auth-law-a1.herokuapp.com/user', headers={"Authorization": token}).json()
             username = r["username"]
+            #TODO : Bilang ke sae untuk tambahin field cart_status
+            # Nanti abis itu tinggal send
+            order = order.objects.get(pk = id)
+            order_status = order.order_status
+            message = {
+                "order_status" : order_status,
+            }
+            #TODO : Send order status ke checkout service
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+            channel = connection.channel()
+            channel.queue_declare(queue='notify')
+            channel.basic_publish(exchange='', routing_key='notify', body=message)
+            #requests.put('https://checkoutservive.herokuapp.com/cart/'+username, data = message)
+            content = {
+                "message" : "Order status sucessfully notified",
+            }
+            logging = {
+                "type": "INFO",
+                "service" : "order",
+                "message": "200 - User is notified"
+            }
+            requests.post('http://35.225.170.45:2323/logs', json=logging)
+            connection.close()
+            return Response(content, status = status.HTTP_200_OK)
         except:
             logging = {
                 "type": "ERROR",
@@ -223,24 +248,6 @@ def notify_status(request,id):
                 "error_message": "You are not allowed to do this operation"
             }, status=status.HTTP_401_UNAUTHORIZED)
         
-        #TODO : Bilang ke sae untuk tambahin field cart_status
-        # Nanti abis itu tinggal send
-        order = order.objects.get(pk = id)
-        order_status = order.order_status
-        #TODO : Send order status ke checkout service
-        #TODO : Pakai rabbitmq
-        requests.put('https://checkoutservive.herokuapp.com/cart/'+username, data = order_status)
-        content = {
-            "message" : "Order status sucessfully notified",
-        }
-        logging = {
-            "type": "INFO",
-            "service" : "order",
-            "message": "200 - User is notified"
-        }
-        requests.post('http://35.225.170.45:2323/logs', json=logging)
-
-        return Response(content, status = status.HTTP_200_OK)
 
     except Exception as e:
         logging = {
@@ -268,12 +275,19 @@ def send_status(request,id):
                 # Nanti abis itu tinggal send
                 order = order.objects.get(pk = id)
                 order_status = order.order_status
+                message = {
+                    "order_status" : order_status,
+                }
                 #TODO : Send order status ke checkout service
-                #TODO : Pakai rabbitmq
-                requests.put('https://checkoutservive.herokuapp.com/cart/'+username, data = order_status)
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+                channel = connection.channel()
+                channel.queue_declare(queue='send-status')
+                channel.basic_publish(exchange='', routing_key='send-status', body=message)
+                #requests.put('https://checkoutservive.herokuapp.com/cart/'+username, data = order_status)
                 content = {
                     "message" : "Order status sucessfully sent",
                 }
+                connection.close()
                 return Response(content, status = status.HTTP_200_OK)
             else:
                 logging = {
@@ -282,7 +296,6 @@ def send_status(request,id):
                     "message": "401 - User is unauthorized"
                 }
                 requests.post('http://35.225.170.45:2323/logs', json=logging)    
-
                 return Response({
                     "error": "UNAUTHORIZED",
                     "error_message": "You are not allowed to do this operation"
