@@ -3,7 +3,7 @@ import requests
 from rest_framework.decorators import api_view
 from rest_framework.views import Response
 from rest_framework import status
-from models import Order
+from .models import Order
 
 #Kenapa ga pake username? Karena satu orang bisa checkout lebih dari sekali
 #TODO : Intergrate front-end back-end

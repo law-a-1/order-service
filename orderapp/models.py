@@ -17,7 +17,7 @@ class Order(models.Model):
         (REJECT, 'RJCT'),
     ]
     order_status = models.CharField(
-        max_length = 2,
+        max_length = 4,
         choices = ORDER_STATUS_CHOICES,
         default = WAITING,
     )
