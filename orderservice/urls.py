@@ -15,12 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from orderapp.views import notify_status, order_service, create_order, send_status
+from orderapp.views import order_service
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('oderservice/<int:pk>/', order_service),
-    path('orderservice/create/', create_order),
-    path('orderservice/notify/', notify_status),
-    path('orderservice/send', send_status)
+    # path('orderservice/create/', create_order),
+    # path('orderservice/notify/', notify_status),
+    # path('orderservice/send', send_status)
 ]

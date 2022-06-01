@@ -1,9 +1,4 @@
-from itertools import product
 from django.db import models
-
-class Cart(models.Model):
-    username = models.CharField(max_length=255, unique=True)
-    grand_total = models.IntegerField(default=0)
 
 class Order(models.Model):
     WAITING = 'WAIT'
@@ -21,6 +16,6 @@ class Order(models.Model):
         choices = ORDER_STATUS_CHOICES,
         default = WAITING,
     )
-    username = models.ForeignKey(Cart, related_name= "orders", on_delete=models.CASCADE)
+    username = models.CharField(max_length=255)
     order_date = models.DateTimeField()
     order_total = models.BigIntegerField()
