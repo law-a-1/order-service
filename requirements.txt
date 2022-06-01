@@ -1,0 +1,6 @@
+Django
+djangorestframework
+requests
+sqlparse
+urllib3
+pika
