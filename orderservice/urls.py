@@ -16,11 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from orderapp.views import order_service
+from orderapp.views import change_status_wait, change_status_send
+from orderapp.views import change_status_reject, change_status_recieved
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('oderservice/<int:pk>/', order_service),
-    # path('orderservice/create/', create_order),
-    # path('orderservice/notify/', notify_status),
-    # path('orderservice/send', send_status)
+    path('orderservice/', order_service),
+    path('orderservice/wait/<int:pk>/', change_status_wait),
+    path('orderservice/send/<int:pk>/', change_status_send),
+    path('orderservice/rjct/<int:pk>/', change_status_reject),
+    path('orderservice/rcvd/<int:pk>/', change_status_recieved)
 ]

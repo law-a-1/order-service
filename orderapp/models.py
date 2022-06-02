@@ -1,20 +1,20 @@
 from django.db import models
 
 class Order(models.Model):
-    WAITING = 'WAIT'
-    SENDING = 'SEND'
-    RECIEVED = 'RCVE'
-    REJECT = 'RJCT'
+    WAIT = 'WAITING'
+    SEND = 'SENDING'
+    RECV = 'RECEIEVED'
+    RJCT = 'REJECT'
     ORDER_STATUS_CHOICES = [
-        (WAITING, 'Waiting'),
-        (SENDING, 'Sending'),
-        (RECIEVED, 'RCVE'),
-        (REJECT, 'RJCT'),
+        (WAIT, 'WAITING'),
+        (SEND, 'SENDING'),
+        (RECV, 'RECIEVED'),
+        (RJCT, 'REJECT'),
     ]
     order_status = models.CharField(
-        max_length = 4,
+        max_length = 9,
         choices = ORDER_STATUS_CHOICES,
-        default = WAITING,
+        default = WAIT,
     )
     username = models.CharField(max_length=255)
     order_date = models.DateTimeField()
