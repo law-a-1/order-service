@@ -1,2 +1,2 @@
-RABBIT_HOST= 'orderservice-rabbit'
+RABBIT_HOST= 'localhost'
 QUEUE_TOPIC = 'order-service'

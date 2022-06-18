@@ -1,3 +1,4 @@
+from datetime import datetime
 import requests
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -6,7 +7,6 @@ from rest_framework.views import Response
 from rest_framework import status
 from .models import Order
 
-#TODO : Intergrate front-end back-end
 @api_view(['GET'])
 def order_service(request):
     try:
@@ -32,7 +32,6 @@ def order_service(request):
                         "message": "200 - Order is retrieved"
                     }
                     requests.post('http://35.225.170.45:2323/logs', json=logging)
-
                     return Response(contents, status= status.HTTP_200_OK, content_type=json)
                 except:
                     logging = {
@@ -65,7 +64,6 @@ def order_service(request):
                         "message": "200 - Order is retrieved"
                     }
                     requests.post('http://35.225.170.45:2323/logs', json=logging)
-
                     return Response(contents, status= status.HTTP_200_OK, content_type=json)
                 except Exception as e:
                     print(e)
@@ -391,6 +389,54 @@ def change_status_recieved(request,pk):
             "type": "ERROR",
             "service" : "order",
             "message": "500 - An Error occured. Error details: "+e
+        }
+        requests.post('http://35.225.170.45:2323/logs', json=logging)    
+        content = {
+            "error": "Internal Server Error",
+            "error_description": "Internal server error. Contact admin for support."
+        }
+        return Response(content, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(["POST"])
+def create_order(request):
+    try:
+        try:
+            token = request.headers['Authorization']
+            r = requests.get('https://auth-law-a1.herokuapp.com/user', headers={"Authorization": token}).json()
+            if r["role"] == "admin":
+                order = Order.objects.create(
+                                        username=request.data["username"],
+                                        order_total = request.data["grand_total"],
+                                        order_date = datetime.now())
+                order.save()
+                content = {
+                    "message" : "Order succesfully created"
+                }
+                logging = {
+                    "type": "INFO",
+                    "service" : "order",
+                    "message": "200 - Order is created"
+                }
+                requests.post('http://35.225.170.45:2323/logs', json=logging)
+                return Response(content, status= status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            logging = {
+                "type": "ERROR",
+                "service" : "order",
+                "message": "401 - User is unauthorized"
+            }
+            requests.post('http://35.225.170.45:2323/logs', json=logging)
+            return Response({
+                "error": "UNAUTHORIZED",
+                "error_message": "You are not allowed to do this operation"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as e:
+        print(e)
+        logging = {
+            "type": "ERROR",
+            "service" : "order",
+            "message": "500 - An Error occured. Error details: "+ str(e)
         }
         requests.post('http://35.225.170.45:2323/logs', json=logging)    
         content = {

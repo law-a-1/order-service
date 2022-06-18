@@ -18,10 +18,12 @@ from django.urls import path
 from orderapp.views import order_service
 from orderapp.views import change_status_wait, change_status_send
 from orderapp.views import change_status_reject, change_status_recieved
+from orderapp.views import create_order
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('orderservice/', order_service),
+    path('orderservice/create-order/', create_order),
     path('orderservice/wait/<int:pk>/', change_status_wait),
     path('orderservice/send/<int:pk>/', change_status_send),
     path('orderservice/rjct/<int:pk>/', change_status_reject),
