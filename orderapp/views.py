@@ -419,6 +419,17 @@ def create_order(request):
                 }
                 requests.post('http://35.225.170.45:2323/logs', json=logging)
                 return Response(content, status= status.HTTP_200_OK)
+            else:
+                logging = {
+                    "type": "ERROR",
+                    "service" : "order",
+                    "message": "401 - User is unauthorized"
+                }
+                requests.post('http://35.225.170.45:2323/logs', json=logging)
+                return Response({
+                    "error": "UNAUTHORIZED",
+                    "error_message": "You are not allowed to do this operation"
+                }, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             print(e)
             logging = {
