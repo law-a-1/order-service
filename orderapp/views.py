@@ -419,6 +419,22 @@ def create_order(request):
                 }
                 requests.post('http://35.225.170.45:2323/logs', json=logging)
                 return Response(content, status= status.HTTP_200_OK)
+            elif r["role"] == "user":
+                order = Order.objects.create(
+                                        username=request.data["username"],
+                                        order_total = request.data["grand_total"],
+                                        order_date = datetime.now())
+                order.save()
+                content = {
+                    "message" : "Order succesfully created"
+                }
+                logging = {
+                    "type": "INFO",
+                    "service" : "order",
+                    "message": "200 - Order is created"
+                }
+                requests.post('http://35.225.170.45:2323/logs', json=logging)
+                return Response(content, status= status.HTTP_200_OK)
             else:
                 logging = {
                     "type": "ERROR",
